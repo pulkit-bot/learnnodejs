@@ -3,7 +3,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const userSchema = require('../models/userSchema');
 const { message } = require('../validators/productValidator');
-const SECRET_KEY= "pulkit@123"
+const SECRET_KEY= "pulkit@123";
+const blacklist = require('../models/blacklistSchema');
 
 const register = async (req,res)=>{
    //console.log(req.body);
@@ -12,7 +13,7 @@ const register = async (req,res)=>{
        const username =  req.body.username;
        const pwd =   req.body.password;
 
-   const hashpassword = await  bcrypt.hash(pwd,10);
+   const hashpassword = await bcrypt.hash(pwd,10);
 
        const userCreated = await User.create({
          email : email,
@@ -57,7 +58,7 @@ const login = async (req,res) => {
                                     user_id : user.id,
                                     user_name : user.username,
                                     user_email : user.email
-                                },SECRET_KEY,{expiresIn:'60s'})
+                                },SECRET_KEY,{expiresIn:'1m'})
 
                                 const refresh_token = jwt.sign({
                                     user_id : user.id,
@@ -140,7 +141,7 @@ const refresh_token = (req,res) =>{
                 id: user.user_id,
                 username: user.user_name,
                 email: user.user_email
-            }, SECRET_KEY, { expiresIn: "60s" });
+            }, SECRET_KEY, { expiresIn: "1m" });
 
             return res.status(200).json({
                 success: true,
@@ -156,4 +157,31 @@ const refresh_token = (req,res) =>{
 
 }
 
-module.exports = {register,login,profile,refresh_token}
+
+ const logout =  async (req,res) => {
+
+const header = req.headers['authorization'];
+    try{
+
+         if (!header) {
+            return res.status(401).json({ success: false, message: "Refresh token not found" });
+        }
+
+        const bearer = header.split(" ");
+        const logouttoken = bearer[1];
+
+          const logoutblacklist = await blacklist.create({
+              _token : logouttoken
+            })
+    
+            res.setHeader('Clear-Site-Data', '"cookies", "storage", "cache"');
+
+           res.status(200).json({ sucess:true,message: 'Logged out successfully and site data cleared.' });
+          
+    }catch(err)
+    {
+       return res.status(400).json({ success: false, message: error.message }); 
+    }
+ }
+
+module.exports = {register,login,profile,refresh_token,logout}

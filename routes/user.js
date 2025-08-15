@@ -4,7 +4,7 @@
 
 const { auth } = require('../middleware/auth');
 
- const { register,login,profile,refresh_token} = require('../controllers/userController');
+ const { register,login,profile,refresh_token,logout} = require('../controllers/userController');
 
  router.post("/register",register)
 
@@ -13,6 +13,8 @@ const { auth } = require('../middleware/auth');
  router.get("/profile",auth,profile)
 
  router.get("/refresh-token",auth,refresh_token)
+
+ router.get('/logout',auth,logout);
 
 
 

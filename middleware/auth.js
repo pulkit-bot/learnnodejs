@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const userSchema = require('../models/userSchema');
 const SECRET_KEY= "pulkit@123"
+const blacklist = require('../models/blacklistSchema');
 
 
 const auth = async (req,res,next)=>{
@@ -23,6 +24,13 @@ const auth = async (req,res,next)=>{
                     if (!token) {
             return res.status(401).json({ message: "Token missing" });
         }
+
+
+      const blacklist_token_exist =  await blacklist.findOne({_token:token});
+    if(blacklist_token_exist)
+    {
+      return res.status(401).json({ message: "Session Expired" });
+    }
 
                     // console.log("Token".token);
                     const user = jwt.verify(token,SECRET_KEY);

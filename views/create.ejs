@@ -1,0 +1,56 @@
+<%- include('partial/header') %>
+<form action="/store" method="POST">
+
+    <% if (errors && errors.length > 0) { %>
+    <div class="alert alert-danger">
+      <ul>
+        <% errors.forEach(err => { %>
+          <li style="color: red;"><%= err.msg %></li>
+        <% }) %>
+      </ul>
+    </div>
+  <% } %>
+
+    <div class="form-group">
+    <label for="exampleInputEmail1">Name </label>
+    <input type="text" class="form-control" name="name"  id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Name">
+    
+  </div>
+  <div class="form-group">
+    <label for="exampleInputEmail1">Price </label>
+    <input type="text" class="form-control" name="price"   id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Price">
+    
+  </div>
+  <div class="form-group">
+    <label for="exampleInputEmail1">Email </label>
+    <input type="email" class="form-control" name="email"   id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+    
+  </div>
+  
+
+   <!-- Single Dropdown -->
+  <div class="form-group">
+    <label>Category</label>
+    <select name="category" class="form-control">
+      <option value="">-- Select Category --</option>
+      <% categories.forEach(cat => { %>
+        <option value="<%= cat %>"><%= cat %></option>
+        <% }) %>
+
+    </select>
+  </div>
+
+
+  <div class="form-group">
+    <label>Gender</label><br>
+    <label>
+      <input type="radio" name="gender" value="Male"> Male
+    </label>
+    <label>
+      <input type="radio" name="gender" value="Female"> Female
+    </label>
+  </div>
+  
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+<%- include('partial/footer') %>

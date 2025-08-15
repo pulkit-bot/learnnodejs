@@ -1,0 +1,38 @@
+<%- include('partial/header') %>
+<table class="table">
+  <thead>
+    <tr>
+      
+      <th scope="col">name</th>
+      <th scope="col">email</th>
+      <th scope="col">price</th>
+      <th scope="col">Ctageory</th>
+      <th scope="col">gender</th>
+      <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+      
+
+<% product.forEach(function(item,index){ %>
+  <tr>
+    <td><%= item.name %></td>
+    <td><%= item.email %></td>
+    <td><%= item.price %></td>
+     <td><%= item.category %></td>
+      <td><%= item.gender %></td>
+    <td> <!-- Delete button -->
+      <a href="/edit/<%= item._id %>" class="btn btn-sm btn-primary">Edit</a>
+      <form action="/delete/<%= item._id %>" method="POST" style="display:inline;">
+        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">
+          Delete
+        </button>
+      </form></td>
+  </tr>
+
+<% }) %>
+
+  </tbody>
+</table>
+<%- include('partial/footer') %>

@@ -4,6 +4,14 @@ const { body, validationResult } = require("express-validator");
 const multer = require("multer");
 const path = require("path");
 const nodemail = require("nodemailer");
+const cloudinary = require("cloudinary").v2;
+const fs = require("fs");
+
+cloudinary.config({
+  cloud_name: "dfy15assu",
+  api_key: "187187748955255",
+  api_secret: "hrT5mp_y31gnUOYFRfHKKW1IpK8",
+});
 
 
    const transport = nodemail.createTransport({
@@ -188,8 +196,8 @@ const productdata = await Product.updateOne(
 
 
 
-const uploadFile = (req, res) => {
-  upload(req, res, function (err) {
+const uploadFile =  (req, res) => {
+  upload  (req, res, async  function (err) {
         if (err instanceof multer.MulterError) {
             return res.status(400).json({ success: false, message: err.message });
         } else if (err) {
@@ -202,13 +210,29 @@ const uploadFile = (req, res) => {
 
         const baseUrl = `${req.protocol}://${req.get("host")}/uploads/`;
 
-        const newProduct = Product.create({
-            name,
-            price,
-            category,
-            image_name: req.file.filename,  // ✅ file name store
-            image_url: baseUrl + req.file.filename  // ✅ URL store
-         });
+            //const uploadImage = await cloudinary.uploader.upload(req.file.path);
+
+    
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "buyer", // 👈 yahan aap folder name de sakte ho
+        use_filename: true,
+        unique_filename: false,
+      });
+
+      // Delete file from local server after upload
+   //  fs.unlinkSync(req.file.path);
+
+      //   const newProduct = Product.create({
+      //       name,
+      //       price,
+      //       category,
+      //       image_name: req.file.filename,  // ✅ file name store
+      //       image_url: baseUrl + req.file.filename,  // ✅ URL store
+      //       image : uploadImage, // image uplaod cloudinary
+      //       // image_url: result.secure_url,       // 👈 Cloudinary se URL
+      //       //   public_id: result.public_id, 
+
+      //    });
         res.json({
             success: true,
             message: "File uploaded successfully",
@@ -216,7 +240,9 @@ const uploadFile = (req, res) => {
                 filename: req.file.filename,
                 path: req.file.path,
                 size: req.file.size,
-                mimetype: req.file.mimetype
+                mimetype: req.file.mimetype,
+                result
+               //  uplaod : uploadImage
             }
         });
     });
@@ -230,7 +256,7 @@ const sendMail = async(req,res) =>{
 
          const info = await transport.sendMail({
                   from:"pulkit@mobitrade.in",
-                  to:"keertipulkit@gmail.com",
+                  to:"pulkit06@gmail.com",
                   subject: "Mail Subject",
                   text:"Keerti ...."
 

@@ -2,6 +2,7 @@ const express =  require("express");
 const { validationResult } = require("express-validator");
 const { productValidationRules } = require("../validators/productValidator");
 const productSchema = require("../validators/productValidator");
+const rateLimiter = require("../middleware/rateLimiter");
 
 const router =  express.Router();
 

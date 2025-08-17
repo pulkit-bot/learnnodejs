@@ -4,6 +4,7 @@ const path = require('path');
 const mongoose = require("mongoose");
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const multer = require("multer");
 
 
 app.use(cors());
@@ -32,6 +33,7 @@ app.set('view engine','ejs')
 
 console.log("RUNNING FILE:", __filename);
 app.use(express.static((__dirname, 'public')));
+
 
 
 app.use('/',stu);

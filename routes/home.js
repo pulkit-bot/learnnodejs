@@ -5,7 +5,7 @@ const productSchema = require("../validators/productValidator");
 
 const router =  express.Router();
 
-const {getallList,storelist,createlist,editlist,deletelist,updatelist} =  require('../controllers/crudController');
+const {getallList,storelist,createlist,editlist,deletelist,updatelist,uploadFile,sendMail} =  require('../controllers/crudController');
 
 router.get('/',getallList);
 
@@ -52,4 +52,10 @@ router.post('/update/:id',updatelist);
 
 router.post('/delete/:id',deletelist);
 
+router.post('/upload',uploadFile);
+
+
+router.get('/sendMail',sendMail);
+
 module.exports = router;
+

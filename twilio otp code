@@ -1,0 +1,88 @@
+const express = require("express");
+// models/Otp.js
+const mongoose = require("mongoose");
+
+const otpSchema = new mongoose.Schema({
+  phone: { type: String, required: true },
+  otp: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now, expires: 300 } // 300 sec = 5 min expiry
+});
+
+module.exports = mongoose.model("Otp", otpSchema);
+
+
+
+const twilio = require("twilio");
+//const Otp = require("./models/Otp");
+
+
+
+// twilio Account SID and Auth token 
+const client = twilio('AC5825111909264864dd8982ae02059472', '5d45cc2a403fd7d3df56da77987c2152');
+
+
+// In-memory store for OTPs (use Redis/DB in production)
+// let otpStore = {};
+
+// Generate random OTP
+function generateOTP() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+
+app.post("/send-otp", async (req, res) => {
+  const { phone } = req.body;
+
+  if (!phone) return res.status(400).json({ error: "Phone number is required" });
+
+  const otp = generateOTP();
+  //otpStore[phone] = otp;
+
+  try {
+
+    await Otp.findOneAndUpdate(
+      { phone },
+      { otp, createdAt: new Date() },
+      { upsert: true, new: true }
+    );
+
+
+    await client.messages.create({
+      body: `Your OTP code is ${otp}`,
+      from: '+15619566917',// twilio phone number
+      to: `+91${phone}`
+    });
+
+    res.json({ success: true, message: "OTP sent successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Verify OTP
+app.post("/verify-otp", async (req, res) => {
+  const { phone, otp } = req.body;
+
+  try {
+    const otpRecord = await Otp.findOne({ phone });
+
+    if (!otpRecord) {
+      return res.status(400).json({ success: false, message: "OTP expired or not found" });
+    }
+
+    if (otpRecord.otp === otp) {
+      await Otp.deleteOne({ phone }); // OTP used → delete
+      return res.json({ success: true, message: "OTP verified successfully" });
+    }
+
+    res.status(400).json({ success: false, message: "Invalid OTP" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+
+
+
+app.listen(port);
